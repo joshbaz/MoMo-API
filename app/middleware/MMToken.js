@@ -1,6 +1,5 @@
 import axios from "axios";
 import dotenv from "dotenv";
-import payModel from "../models/payModel.js";
 dotenv.config();
 
 export const generateAuthAPITk = async (req, res, next) => {

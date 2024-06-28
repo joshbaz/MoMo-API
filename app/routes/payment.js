@@ -1,7 +1,7 @@
 import express from "express";
 import {  createAPIUser, getAPIUser } from "../middleware/MMCreateAPIUser.js";
 import dotenv from "dotenv";
-import { makePaymentRequest } from "../controllers/paymentController.js";
+import { makePaymentRequest, makePaymentSandBox } from "../controllers/paymentController.js";
 import { generateAuthAPITk } from "../middleware/MMToken.js";
 
 const router = express.Router();
@@ -40,5 +40,11 @@ router.get("/paymovie", async (req, res, next) => {
   res.status(200).json("done");
 });
 
-router.post("/pay", createAPIUser, getAPIUser, generateAuthAPITk, makePaymentRequest);
+// router.post("/pay", createAPIUser, getAPIUser, generateAuthAPITk, makePaymentRequest);
+
+router.post(
+  "/pay",
+
+  makePaymentSandBox
+);
 export default router;
