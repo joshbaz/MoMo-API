@@ -21,11 +21,14 @@ app.use(cors({ origin: "*", credentials: true }));
  * Import @routes
  */
 import payRoutes from './app/routes/payment.js'
+import pesaRoutes from './app/routes/pesapalTransactions.js';
 
 /** 
  * implement routes
  */
 app.use('/payment', payRoutes)
+app.use('/nyatipay', pesaRoutes)
+
 app.use(express.json());
 
 /** 

@@ -9,6 +9,9 @@ const payAPISchema = mongoose.Schema(
         },
         xReferenceId: {
             type: String
+        },
+        pesaNotificationID: {
+            type: String,
         }
     }, { timestamps: true }
 );
