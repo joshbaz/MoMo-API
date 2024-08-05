@@ -3,16 +3,24 @@ import mongoose from 'mongoose';
 const transactionAPISchema = mongoose.Schema(
     {
         _id: mongoose.Schema.Types.ObjectId,
-        transactionType: string,
-        paymentType: string,
-        amount: string,
-        currency: string,
-        email: string,
-        purpose: string,
-        phonenumber: string,
-        firstname: string,
-        lastname: string,
-        createdDate: Date
+        transactionType: String,
+        paymentType: String,
+        payment_status_description: {
+            type: String,
+            default: "Pending"
+        },
+        status_reason: String,
+        paidAmount: Number,
+        purpose: String,
+        amount: Number,
+        currency: String,
+        email: String,
+        purpose: String,
+        phonenumber: String,
+        firstname: String,
+        lastname: String,
+        orderTrackingId: String,
+       // createdDate: Date
     }, { timestamps: true }
 );
 

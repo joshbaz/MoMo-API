@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+
+</head>
+
+<body>
+    <tbody>
+       
+        <table class="tables products" style="display: flex;flex-direction:column;">
+             <tr>
+                <div style="margin-top: 20px; margin-left:20px;">
+                  Dear Nyati Developer Team.
+                </div>
+            </tr>
+             <tr>
+                <div style="margin-top: 10px; margin-left:20px;">
+                  Great News, Payment Recieved - <span data-bind="text: transactionType">{{transactionType}}</span>
+                </div>
+            </tr>
+             <tr>
+                <div style="margin-top: 20px; margin-left:20px;">
+                 <span data-bind='text: paidAmount'>{{paidAmount}}</span> has been received through<strong><span data-bind="text: paymentType">({{paymentType}})</span></strong> .
+                </div>
+            </tr>
+            <tr>
+                {{!-- <div style="margin-top: 20px; margin-left:20px;">
+                    Thank you.
+                </div> --}}
+            </tr>
+            
+            
+            <tr>
+                <div style="margin-top: 10px; margin-left:20px;">
+                    <strong>Automated Payments</strong>
+                </div>
+                <div style="margin-top: 3px; margin-left:20px;">
+                    <strong>Nyati Systems</strong>
+                </div>
+            </tr>
+        </table>
+        </table>
+        </td>
+        </table>
+        </td>
+        </td>
+        </tr>
+    </tbody>
+
+
+
+</body>
+
+</html>

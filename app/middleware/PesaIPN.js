@@ -110,7 +110,7 @@ const registerIPN = async (token) => {
         
         let requestParameters = {
             url: `${process.env.NG_Pesa_Callback}`,
-            "ipn_notification_type": "POST"
+            "ipn_notification_type": "GET"
         }
         let headers = {
             "Content-Type": "application/json",
