@@ -7,6 +7,7 @@ export const generatePesaAuthTk = async (req, res, next) => {
     try {
 
         console.log("Body", req.body);
+        //test credentials
         let payload = {
             consumer_key: "TDpigBOOhs+zAl8cwH2Fl82jJGyD8xev",
             consumer_secret: "1KpqkfsMaihIcOlhnBo/gBZ5smw="

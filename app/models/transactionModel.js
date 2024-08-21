@@ -20,6 +20,7 @@ const transactionAPISchema = mongoose.Schema(
         firstname: String,
         lastname: String,
         orderTrackingId: String,
+        transactionId: String,
        // createdDate: Date
     }, { timestamps: true }
 );
