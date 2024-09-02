@@ -164,6 +164,7 @@ router.get("/transact_statuses", generateAirtelAuthTk, async (req, res, next) =>
     }
 })
 
+//check transaction details on successful processing
 router.get("/checkStatus", async (req, res, next) => {
     try {
         const { OrderTrackingId } = req.query;
