@@ -13,7 +13,12 @@ import fs from "fs";
 import { request } from "http";
 const router = express.Router();
 
+
 dotenv.config();
+
+const upload = multer({
+    storage: multer.memoryStorage()
+})
 
 router.post("/donate", upload.none(), generateAirtelAuthTk, async (req, res, next) => {
     try {
@@ -157,5 +162,50 @@ router.get("/transact_statuses", generateAirtelAuthTk, async (req, res, next) =>
         }
         next(error)
     }
-} )
+})
+
+router.get("/checkStatus", async (req, res, next) => {
+    try {
+        const { OrderTrackingId } = req.query;
+        let getTransact = await transactModel.findOne({ orderTrackingId: OrderTrackingId });
+
+        if (!getTransact) {
+            const error = new Error("Transaction not Found");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        let transactStatus = getTransact.payment_status_description
+
+        const selectMessage = (shortMessage) => {
+            switch (shortMessage) {
+                case "TIP":
+                    return "Transaction In Progress";
+                case "TF":
+                    return "Transaction has Failed";
+                case "TS":
+                    return "Transaction Successful";
+                case "TP":
+                    return "Transaction Pending"
+                default:
+                    return null;
+            }
+        }
+
+        res.status(200).json({
+            payStatus: selectMessage(transactStatus),
+            paidAmount: getTransact.amount,
+            paymentType: getTransact.paymentType,
+            transactionId: getTransact.transactionId,
+            currency: getTransact.currency,
+            "orderTrackingId": OrderTrackingId
+        });
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500
+            console.log("error", error)
+        }
+        next(error)
+    }
+})
 export default router;

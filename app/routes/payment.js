@@ -47,4 +47,16 @@ router.post(
 
   makePaymentSandBox
 );
+
+router.get("/checkStatus", async (req, res, next) => {
+  try {
+
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500
+      console.log("error", error)
+    }
+    next(error)
+  }
+})
 export default router;
