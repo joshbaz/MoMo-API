@@ -7,20 +7,29 @@ export const generatePesaAuthTk = async (req, res, next) => {
     try {
 
         console.log("Body", req.body);
+        let consumer_key = process.env.Production_State === "production" ? process.env.LIVE_PESA_KEY : process.env.SANDBOX_PESA_KEY
+
+        let consumer_secret = process.env.Production_State === "production" ? process.env.LIVE_PESA_SECRET : process.env.SANDBOX_PESA_SECRET
         //test credentials
         let payload = {
-            consumer_key: "TDpigBOOhs+zAl8cwH2Fl82jJGyD8xev",
-            consumer_secret: "1KpqkfsMaihIcOlhnBo/gBZ5smw="
+            consumer_key: consumer_key,
+            consumer_secret: consumer_secret
         }
 
-        console.log("payload",payload)
+        console.log("payload", payload, process.env.SECRETVA)
+
+        console.log("process.env.Production_State", process.env.Production_State, process.env.PESA_LIVE_URL, process.env.PESA_Sandbox_URL)
+        
+       // console.log("SANDBOX_PESA_SECRET", process.env.SANDBOX_PESA_SECRET)
 
         let headers = {
             "Content-Type": "application/json",
             "Accept": "*/*"
         }
 
-        const tkLink = `${process.env.PESA_S_URL}/api/Auth/RequestToken`;
+        let PESA_URL = process.env.Production_State === "production" ? process.env.PESA_LIVE_URL : process.env.PESA_Sandbox_URL
+
+        const tkLink = `${PESA_URL}/api/Auth/RequestToken`;
 
         let generatedTk = await axios.post(tkLink, payload, { headers: headers });
 

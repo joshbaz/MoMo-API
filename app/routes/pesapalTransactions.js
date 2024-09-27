@@ -35,13 +35,15 @@ router.post("/donate", upload.none(), generatePesaAuthTk, generateIPN_ID, async 
     try {
 
         let {body} = req
-        console.log("tokenRP", req.bearertk, req.ipn_id);
+        //console.log("tokenRP", req.bearertk, req.ipn_id);
         console.log(body, "Body", req.body);
         
         const createdUUID = uuidv4();
 
         if (req.body.paymentType === "Visa") {
-            let PesaRequestLink = `${process.env.PESA_S_URL}/api/Transactions/SubmitOrderRequest`
+
+            let PESA_URL = process.env.Production_State === "production" ? process.env.PESA_LIVE_URL : process.env.PESA_Sandbox_URL
+            let PesaRequestLink = `${PESA_URL}/api/Transactions/SubmitOrderRequest`
 
             let headers = {
                 "Content-Type": "application/json",
@@ -55,7 +57,7 @@ router.post("/donate", upload.none(), generatePesaAuthTk, generateIPN_ID, async 
                 currency: "UGX",
                 amount: req.body.amount,
                 description: `Donation- ${req.body.note}`,
-                callback_url: "http://localhost:3000/pay-response",
+                callback_url: `${process.env.CLIENT_URL}/pay-response`,
                 cancellation_url: "", //optional
                 notification_id: req.ipn_id,
                 "branch": "",
@@ -138,9 +140,11 @@ router.get("/tansact_statuses", generatePesaAuthTk, async (req, res, next) => {
 
         const { OrderTrackingId } = req.query;
 
-        console.log("OrderTrackingId", OrderTrackingId)
+        //console.log("OrderTrackingId", OrderTrackingId)
 
-        let PesaRequestLink = `${process.env.PESA_S_URL}/api/Transactions/GetTransactionStatus?orderTrackingId=${OrderTrackingId}`
+        let PESA_URL = process.env.Production_State === "production" ? process.env.PESA_LIVE_URL : process.env.PESA_Sandbox_URL
+
+        let PesaRequestLink = `${PESA_URL}/api/Transactions/GetTransactionStatus?orderTrackingId=${OrderTrackingId}`
 
         let headers = {
             "Content-Type": "application/json",
@@ -156,10 +160,10 @@ router.get("/tansact_statuses", generatePesaAuthTk, async (req, res, next) => {
         } else {
             const { payment_method, amount, payment_status_description, description, payment_account, currency, message } = submitStatusRequest.data;
             
-            console.log("pay-req", payment_status_description)
+           //console.log("pay-req", payment_status_description)
             let getTransact = await transactModel.findOne({ orderTrackingId: OrderTrackingId });
 
-            console.log("getTransact", getTransact)
+            //console.log("getTransact", getTransact)
             if (!getTransact) {
                 const error = new Error("Transaction missing");
                 error.statusCode = 404;

@@ -1,6 +1,6 @@
 import axios from "axios"
 import dotenv from "dotenv"
-import payModel from '../models/payModel.js';
+//import payModel from '../models/payModel.js';
 
 dotenv.config();
 /** generateIPNID */
@@ -51,7 +51,9 @@ const getIPN = async (token) => {
             "Authorization": token
         }
 
-        const PesaRequestLink = `${process.env.PESA_S_URL}/api/URLSetup/GetIpnList`
+        let PESA_URL = process.env.Production_State === "production" ? process.env.PESA_LIVE_URL : process.env.PESA_Sandbox_URL
+
+        const PesaRequestLink = `${PESA_URL}/api/URLSetup/GetIpnList`
 
         let getRegistration = await axios.get(PesaRequestLink, { headers: headers });
         let getRegister_Payload;
@@ -118,7 +120,9 @@ const registerIPN = async (token) => {
             "Authorization": token
         }
 
-        const PesaRequestLink = `${process.env.PESA_S_URL}/api/URLSetup/RegisterIPN`
+        let PESA_URL = process.env.Production_State === "production" ? process.env.PESA_LIVE_URL : process.env.PESA_Sandbox_URL
+
+        const PesaRequestLink = `${PESA_URL}/api/URLSetup/RegisterIPN`
 
         let registration = await axios.post(PesaRequestLink, requestParameters, { headers: headers });
 
