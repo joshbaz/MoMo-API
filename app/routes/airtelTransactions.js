@@ -27,7 +27,9 @@ router.post("/donate", upload.none(), generateAirtelAuthTk, async (req, res, nex
         const createdUUID = uuidv4();
 
         if (req.body.paymentType === "Airtel") {
-            let AirtelRequestLink = `${process.env.Airtel_Staging_Url}/merchant/v2/payments/`
+            let Airtel_URL = process.env.Production_State === "production" ? process.env.Airtel_Production_Url : process.env.Airtel_Staging_Url;
+
+            let AirtelRequestLink = `${Airtel_URL}/merchant/v2/payments/`
 
             let headers = {
                 "Content-Type": "application/json",
@@ -101,7 +103,9 @@ router.get("/transact_statuses", generateAirtelAuthTk, async (req, res, next) =>
             throw error;
         }
 
-        let AirtelRequestLink = `${process.env.Airtel_Staging_Url}/standard/v2/payments/${OrderTrackingId}`
+        let Airtel_URL = process.env.Production_State === "production" ? process.env.Airtel_Production_Url : process.env.Airtel_Staging_Url;
+
+        let AirtelRequestLink = `${Airtel_URL}/standard/v2/payments/${OrderTrackingId}`
 
         let headers = {
             "Content-Type": "application/json",

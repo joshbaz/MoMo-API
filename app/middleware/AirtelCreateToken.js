@@ -4,9 +4,13 @@ dotenv.config();
 
 export const generateAirtelAuthTk = async (req, res, next) => {
     try {
+        let consumerKey = process.env.Production_State === "production" ? process.env.Airtel_ConsumerKey : process.env.Airtel_Test_ConsumerKey;
+
+        let consumerSecret = process.env.Production_State === "production" ? process.env.Airtel_ConsumerSecret : process.env.Airtel_Test_ConsumerSecret;
+
         let payload = {
-            client_id: process.env.Airtel_ConsumerKey,
-            client_secret: process.env.Airtel_ConsumerSecret,
+            client_id: consumerKey,
+            client_secret: consumerSecret,
             grant_type: "client_credentials"
         }
 
@@ -15,7 +19,9 @@ export const generateAirtelAuthTk = async (req, res, next) => {
             "Accept": "*/*"
         }
 
-        const tkLink = `${process.env.Airtel_Staging_Url}/auth/oauth2/token`;
+        let Airtel_URL = process.env.Production_State === "production" ? process.env.Airtel_Production_Url : process.env.Airtel_Staging_Url;
+
+        const tkLink = `${Airtel_URL}/auth/oauth2/token`;
 
         let generatedTk = await axios.post(tkLink, payload, { headers: headers })
         let Bearertk = `Bearer ${generatedTk.data.token}`;

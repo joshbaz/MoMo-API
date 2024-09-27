@@ -16,9 +16,9 @@ export const generatePesaAuthTk = async (req, res, next) => {
             consumer_secret: consumer_secret
         }
 
-        console.log("payload", payload, process.env.SECRETVA)
+       // console.log("payload", payload, process.env.SECRETVA)
 
-        console.log("process.env.Production_State", process.env.Production_State, process.env.PESA_LIVE_URL, process.env.PESA_Sandbox_URL)
+     //   console.log("process.env.Production_State", process.env.Production_State, process.env.PESA_LIVE_URL, process.env.PESA_Sandbox_URL)
         
        // console.log("SANDBOX_PESA_SECRET", process.env.SANDBOX_PESA_SECRET)
 
