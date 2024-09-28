@@ -69,7 +69,7 @@ router.post("/donate", upload.none(), generateAirtelAuthTk, async (req, res, nex
                     fistname: req.body.firstname,
                     lastname: req.body.lastname,
                     orderTrackingId: submitOrderRequest.data.transaction.id,
-                    payment_status_description: "Pending"
+                    payment_status_description: "Transaction Pending"
                 })
 
                 createTransact.save();
@@ -116,7 +116,8 @@ router.get("/transact_statuses", generateAirtelAuthTk, async (req, res, next) =>
         }
 
         let submitStatusRequest = await axios.get(AirtelRequestLink, { headers: headers });
-        let transactStatus = submitStatusRequest.data.transaction.status
+
+        console.log("see status", submitStatusRequest.data.transaction.status)
         const selectMessage = (shortMessage) => {
             switch (shortMessage) {
                 case "TIP":
@@ -131,6 +132,8 @@ router.get("/transact_statuses", generateAirtelAuthTk, async (req, res, next) =>
                     return null;
             }
         }
+        let transactStatus = selectMessage(submitStatusRequest.data.transaction.status)
+       
         if (transactStatus !== getTransact.payment_status_description) {
 
             /**
@@ -149,7 +152,7 @@ router.get("/transact_statuses", generateAirtelAuthTk, async (req, res, next) =>
             
             res.status(200).json({
                 transactionId: savedStatus.transactionId,
-                payStatus: selectMessage(savedStatus.payment_status_description),
+                payStatus: savedStatus.payment_status_description,
                 status_reason: savedStatus.status_reason
             })
         } else {
@@ -182,23 +185,23 @@ router.get("/checkStatus", async (req, res, next) => {
 
         let transactStatus = getTransact.payment_status_description
 
-        const selectMessage = (shortMessage) => {
-            switch (shortMessage) {
-                case "TIP":
-                    return "Transaction In Progress";
-                case "TF":
-                    return "Transaction has Failed";
-                case "TS":
-                    return "Transaction Successful";
-                case "TP":
-                    return "Transaction Pending"
-                default:
-                    return null;
-            }
-        }
+        // const selectMessage = (shortMessage) => {
+        //     switch (shortMessage) {
+        //         case "TIP":
+        //             return "Transaction In Progress";
+        //         case "TF":
+        //             return "Transaction has Failed";
+        //         case "TS":
+        //             return "Transaction Successful";
+        //         case "TP":
+        //             return "Transaction Pending"
+        //         default:
+        //             return null;
+        //     }
+        // }
 
         res.status(200).json({
-            payStatus: selectMessage(transactStatus),
+            payStatus: transactStatus,
             paidAmount: getTransact.amount,
             paymentType: getTransact.paymentType,
             transactionId: getTransact.transactionId,
