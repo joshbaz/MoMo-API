@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from 'mongoose';
-import transactModel from "../models/TransactionModel.js";
+import transactModel from "../models/transactionModel.js";
 import { generatePesaAuthTk } from "../middleware/PesaCreateToken.js";
 import { generateIPN_ID } from "../middleware/PesaIPN.js";
 import { v4 as uuidv4 } from "uuid";

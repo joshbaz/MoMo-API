@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import transactModel from "../models/TransactionModel.js";
+import transactModel from "../models/transactionModel.js";
 import { generateMTNAuthTk } from "../middleware/ProdMMToken.js";
 import { v4 as uuidv4 } from "uuid";
 import axios from 'axios';
