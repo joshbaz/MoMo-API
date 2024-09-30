@@ -55,6 +55,7 @@ app.use((error, req, res, next) => {
  * database connection && port server allocation
  */
 let mongoUrl = process.env.MONGO_L_URL
+console.log(mongoUrl)
 mongoose.Promise = bluebird;
 mongoose.connect(mongoUrl).then((result) => {
     console.log("Database connected successfully to", result.connections[0].name)
