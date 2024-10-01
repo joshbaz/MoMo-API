@@ -63,7 +63,7 @@ router.post("/donate", upload.none(), generateMTNAuthTk, async (req, res, next) 
             */}
             let requestParameters = {
                 amount: "1.0",
-                "currency": "EUR",
+                "currency": currency,
                 externalId: savedTransaction._id, // can be orderId(payrequest Id) or transac-Id
                 payer: {
                     partyIdType: "MSISDN",
