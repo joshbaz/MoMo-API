@@ -76,7 +76,7 @@ router.post("/donate", upload.none(), generateMTNAuthTk, async (req, res, next) 
             let headers = {
                 "Content-Type": "application/json",
                 "Authorization": req.mtn_access_token,
-                "X-Callback-Url": `${process.env.MoMo_Callback_BaseURL}/nyatimtn/status/${createdUUID}`,
+              //  "X-Callback-Url": `${process.env.MoMo_Callback_BaseURL}/nyatimtn/status/${createdUUID}`,
                 "X-Reference-Id": createdUUID,
                 "X-Target-Environment": TargetEnv,
                 "Ocp-Apim-Subscription-Key": subscription_Key
@@ -227,22 +227,22 @@ router.get("/checkStatus", async (req, res, next) => {
     }
 })
 //CallbackInstance of requesttoPay Payment
-router.put("/status/:orderId", async (req, res, next) => {
-    try {
+// router.put("/status/:orderId", async (req, res, next) => {
+//     try {
 
-        let orderId = req.params.orderId
-        console.log("orderId from CallBack", orderId);
-        console.log("requestBody", req.body);
-        //console.log("request", req);
+//         let orderId = req.params.orderId
+//         console.log("orderId from CallBack", orderId);
+//         console.log("requestBody", req.body);
+//         //console.log("request", req);
 
-        res.status(200).json("seen")
-    } catch (error) {
-        if (!error.statusCode) {
-            error.statusCode = 500
-            console.log("error")
-        }
-        next(error)
-    }
-});
+//         res.status(200).json("seen")
+//     } catch (error) {
+//         if (!error.statusCode) {
+//             error.statusCode = 500
+//             console.log("error")
+//         }
+//         next(error)
+//     }
+// });
 
 export default router;
