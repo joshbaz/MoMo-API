@@ -235,7 +235,7 @@ router.post("/status/:orderId", async (req, res, next) => {
     } catch (error) {
         if (!error.statusCode) {
             error.statusCode = 500
-            console.log("error", error)
+            console.log("error")
         }
         next(error)
     }
