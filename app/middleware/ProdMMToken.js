@@ -90,7 +90,7 @@ export const generateMTNAuthTk = async (req, res, next) => {
         console.log("momo_access_token", generatedTk.data.access_token)
         let Bearertk = `Bearer ${generatedTk.data.access_token}`;
         req.mtn_access_token = Bearertk;
-
+        next()
     } catch (error) {
         if (!error.statusCode) {
             error.statusCode = 500;
