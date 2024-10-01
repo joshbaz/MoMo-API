@@ -63,12 +63,12 @@ router.post("/donate", upload.none(), generateMTNAuthTk, async (req, res, next) 
             
             */}
             let requestParameters = {
-                amount: "1.0",
+                amount: req.body.amount,
                 "currency": currency,
                 externalId: savedTransaction._id, // can be orderId(payrequest Id) or transac-Id
                 payer: {
                     partyIdType: "MSISDN",
-                    partyId: "0787785114", //phonenumber
+                    partyId: req.body.phonenumber, //phonenumber
                 },
                 payerMessage: "Donation of amount / Monthly Subscription for Nyati", //Reason for Payment
                 payeeNote: ""
@@ -77,7 +77,7 @@ router.post("/donate", upload.none(), generateMTNAuthTk, async (req, res, next) 
             let headers = {
                 "Content-Type": "application/json",
                 "Authorization": req.mtn_access_token,
-              //  "X-Callback-Url": `${process.env.MoMo_Callback_BaseURL}/nyatimtn/status/${createdUUID}`,
+               "X-Callback-Url": `${process.env.MoMo_Callback_BaseURL}/nyatimtn/status/${createdUUID}`,
                 "X-Reference-Id": `${createdUUID}`,
                 "X-Target-Environment": TargetEnv,
                 "Ocp-Apim-Subscription-Key": subscription_Key
