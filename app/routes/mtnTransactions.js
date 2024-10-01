@@ -31,6 +31,7 @@ router.post("/donate", upload.none(), generateMTNAuthTk, async (req, res, next) 
 
             let MTNRequestLink = `${MTN_BaseUrl}/collection/v1_0/requesttopay`
 
+            let currency = process.env.Production_State === "production" ? "UGX" : "EUR"
 
             const createTransaction = new transactModel({
                 _id: new mongoose.Types.ObjectId(),
@@ -38,7 +39,7 @@ router.post("/donate", upload.none(), generateMTNAuthTk, async (req, res, next) 
                 paymentType: "MTN-MoMo",
                 amount: req.body.amount,
                 purpose: req.body.note,
-                currency: "UGX",
+                currency: currency,
                 email: req.body.email,
                 phonenumber: req.body.phonenumber,
                 fistname: req.body.firstname,
