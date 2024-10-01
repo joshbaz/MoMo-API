@@ -22,6 +22,7 @@ router.post("/donate", upload.none(), generateMTNAuthTk, async (req, res, next) 
 
         const createdUUID = uuidv4();
 
+     //   console.log("createdUUIS", createdUUID)
         if (req.body.paymentType === "MTN") {
             let TargetEnv = process.env.Production_State === "production" ? process.env.TargetEnvProd : process.env.TargetEnvSandBox;
 
@@ -77,7 +78,7 @@ router.post("/donate", upload.none(), generateMTNAuthTk, async (req, res, next) 
                 "Content-Type": "application/json",
                 "Authorization": req.mtn_access_token,
               //  "X-Callback-Url": `${process.env.MoMo_Callback_BaseURL}/nyatimtn/status/${createdUUID}`,
-                "X-Reference-Id": createdUUID,
+                "X-Reference-Id": `${createdUUID}`,
                 "X-Target-Environment": TargetEnv,
                 "Ocp-Apim-Subscription-Key": subscription_Key
             }
@@ -101,16 +102,16 @@ router.post("/donate", upload.none(), generateMTNAuthTk, async (req, res, next) 
 });
 
 //check status of payment
-router.get("/transact_statuses", generateMTNAuthTk, async (req, res, next) => {
+router.get("/transact_statuses/:id", generateMTNAuthTk,  async (req, res, next) => {
     try {
+       // console.log("mtn bearerTk", req.mtn_access_token);
+        const  OrderTrackingId  = req.params.id;
 
-        const { OrderTrackingId } = req.query;
-
-        console.log("Order Track MTN", OrderTrackingId)
+        console.log(" req.params.id", OrderTrackingId)
 
         let getTransact = await transactModel.findOne({ orderTrackingId: OrderTrackingId });
 
-        console.log("getTransaction", getTransact)
+       // console.log("getTransaction", getTransact)
 
         if (!getTransact) {
             const error = new Error("Transaction not Found");
@@ -127,14 +128,16 @@ router.get("/transact_statuses", generateMTNAuthTk, async (req, res, next) => {
         let MTNRequestLink = `${MTN_BaseUrl}/collection/v1_0/requesttopay/${OrderTrackingId}`;
 
         let headers = {
-            "Content-Type": "application/json",
+            //  "Content-Type": "application/json",
+            "Authorization": req.mtn_access_token,
             "X-Target-Environment": TargetEnv,
             "Ocp-Apim-Subscription-Key": subscription_Key,
-            "Authorization": req.mtn_access_token
+           
         }
 
         let submitStatusRequest = await axios.get(MTNRequestLink, { headers: headers });
 
+        //console.log("getTransaction", getTransact)
         {/**
             All Statuses Expected & testCases:
             Failed 
@@ -148,8 +151,8 @@ router.get("/transact_statuses", generateMTNAuthTk, async (req, res, next) => {
         console.log("transactStatus", submitStatusRequest.data.status);
 
         const selectMessage = (shortMessage) => {
-            let message = shortMessage ? shortMessage.toLowerCase() : shortMessage
-            switch (message) {
+         
+            switch (shortMessage) {
                
                 case "failed":
                     return "Transaction has Failed";
@@ -165,7 +168,7 @@ router.get("/transact_statuses", generateMTNAuthTk, async (req, res, next) => {
                     return null;
             }
         }
-        let transactStatus = selectMessage(submitStatusRequest.data.status);
+        let transactStatus = selectMessage(submitStatusRequest.data.status.toLowerCase());
        
         //check if transaction status same as the saved one in the db
 
@@ -191,7 +194,7 @@ router.get("/transact_statuses", generateMTNAuthTk, async (req, res, next) => {
     } catch (error) {
         if (!error.statusCode) {
             error.statusCode = 500
-            console.log("error", error)
+           // console.log("error", error)
         }
         next(error)
     }
@@ -201,6 +204,7 @@ router.get("/transact_statuses", generateMTNAuthTk, async (req, res, next) => {
 router.get("/checkStatus", async (req, res, next) => {
     try {
         const { OrderTrackingId } = req.query;
+        console.log("orderTracking", req.query)
         let getTransact = await transactModel.findOne({ orderTrackingId: OrderTrackingId });
         if (!getTransact) {
             const error = new Error("Transaction not Found");
@@ -227,22 +231,22 @@ router.get("/checkStatus", async (req, res, next) => {
     }
 })
 //CallbackInstance of requesttoPay Payment
-// router.put("/status/:orderId", async (req, res, next) => {
-//     try {
+router.put("/status/:orderId", async (req, res, next) => {
+    try {
 
-//         let orderId = req.params.orderId
-//         console.log("orderId from CallBack", orderId);
-//         console.log("requestBody", req.body);
-//         //console.log("request", req);
+        let orderId = req.params.orderId
+        console.log("orderId from CallBack", orderId);
+        console.log("requestBody", req.body);
+        //console.log("request", req);
 
-//         res.status(200).json("seen")
-//     } catch (error) {
-//         if (!error.statusCode) {
-//             error.statusCode = 500
-//             console.log("error")
-//         }
-//         next(error)
-//     }
-// });
+        res.status(200).json("seen")
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500
+            console.log("error")
+        }
+        next(error)
+    }
+});
 
 export default router;

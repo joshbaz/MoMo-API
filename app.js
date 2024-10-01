@@ -16,7 +16,7 @@ dotenv.config();
 /** 
  * @headers activation
  */
-app.use(cors({ origin: "*", credentials: true }));
+app.use(cors({ origin: "*", credentials: false }));
 /**
  * Import @routes
  */

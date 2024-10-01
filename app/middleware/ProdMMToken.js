@@ -1,32 +1,68 @@
 import axios from "axios";
 import dotenv from "dotenv";
+import mongoose from "mongoose";
+import payModel from "../models/payModel.js";
 import { v4 as uuidv4 } from "uuid";
+import { v5 as uuidv5 } from "uuid";
 dotenv.config();
+
+const generateUUID = (primary_key, secondary_key) => {
+    const combinedKeys = `${primary_key}-${secondary_key}`;
+
+    console.log("combinedKeys", combinedKeys);
+
+    const createdUUID = uuidv5(combinedKeys, uuidv5.URL);
+
+    return createdUUID;
+};
 
 // func to create Sandbox ApiUSER
 const createAPIUser = async (subscription_Key) => {
     try {
 
-        let APIUserLink_Sandbox = `${process.env.MoMo_SandboxURL}/v1_0/apiuser`
-        const createdUUID = uuidv4();
+        let primaryKey = process.env.MoMo_Collect_Primary;
+        let secondaryKey = process.env.MoMo_Collect_Secondary;
 
-        let apiUserCreationReq = await axios.post(APIUserLink_Sandbox, {
-            providerCallbackHost: process.env.MoMo_CALLBACK_HOST_RM,
-        }, {
-            headers: {
-                "X-Reference-Id": createdUUID,
-                "Content-Type": "application/json",
-                "Ocp-Apim-Subscription-Key": subscription_Key,
-            }
-        });
+        let uniqueUUID = generateUUID(primaryKey, secondaryKey);
 
-        console.log("apiUserRequest", apiUserCreationReq.data )
+        const findOneUser = await payModel.find();
 
-        return createdUUID
+      //  console.log("findOneUser", findOneUser)
+        if (findOneUser.length < 1 || !findOneUser) {
+            const newApiUser = new payModel({
+                _id: new mongoose.Types.ObjectId(),
+                xReferenceId: uniqueUUID,
+            });
+
+            await newApiUser.save();
+
+            let APIUserLink_Sandbox = `${process.env.MoMo_SandboxURL}/v1_0/apiuser`
+            //const createdUUID = uuidv4();
+
+            let apiUserCreationReq = await axios.post(APIUserLink_Sandbox, {
+                providerCallbackHost: process.env.MoMo_CALLBACK_HOST_RM,
+            }, {
+                headers: {
+                    "X-Reference-Id": uniqueUUID,
+                    "Content-Type": "application/json",
+                    "Ocp-Apim-Subscription-Key": subscription_Key,
+                }
+            });
+
+            console.log("apiUserRequest",)
+
+            return uniqueUUID
+        } else {
+            return uniqueUUID
+        }
+
+   
         
     } catch (error) {
         if (!error.statusCode) {
             error.statusCode = 500;
+
+            console.log("error", error)
         }
        throw error
     }
@@ -66,6 +102,7 @@ export const generateMTNAuthTk = async (req, res, next) => {
         
         let apiKey = process.env.Production_State === "production" ? process.env.MoMo_Prod_ApiKey : await getAPIKey(subscription_Key, apiUser);
 
+    
         {/** Generation of Basic Auth from ApiUser & ApiKey */ }
         let combinedKeys = Buffer.from(`${apiUser}:${apiKey}`).toString("base64");
         let BasicAuth = `Basic ${combinedKeys}`;

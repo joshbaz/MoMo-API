@@ -91,9 +91,9 @@ router.post("/donate", upload.none(), generateAirtelAuthTk, async (req, res, nex
 })
 
 
-router.get("/transact_statuses", generateAirtelAuthTk, async (req, res, next) => {
+router.get("/transact_statuses/:id", generateAirtelAuthTk, async (req, res, next) => {
     try {
-        const { OrderTrackingId } = req.query;
+        const OrderTrackingId = req.params.id;
 
         let getTransact = await transactModel.findOne({ orderTrackingId: OrderTrackingId });
 

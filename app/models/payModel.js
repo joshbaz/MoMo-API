@@ -16,4 +16,4 @@ const payAPISchema = mongoose.Schema(
     }, { timestamps: true }
 );
 
-export default mongoose.model("payAPIs", payAPISchema)
+export default mongoose.model("payapis", payAPISchema)
