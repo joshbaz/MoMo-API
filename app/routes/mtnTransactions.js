@@ -106,7 +106,11 @@ router.get("/transact_statuses", generateMTNAuthTk, async (req, res, next) => {
 
         const { OrderTrackingId } = req.query;
 
+        console.log("Order Track MTN", OrderTrackingId)
+
         let getTransact = await transactModel.findOne({ orderTrackingId: OrderTrackingId });
+
+        console.log("getTransaction", getTransact)
 
         if (!getTransact) {
             const error = new Error("Transaction not Found");
