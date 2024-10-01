@@ -229,7 +229,7 @@ router.post("/status/:orderId", async (req, res, next) => {
         let orderId = req.params.orderId
         console.log("orderId from CallBack", orderId);
         console.log("requestBody", req.body);
-        console.log("request", req);
+        //console.log("request", req);
 
         res.status(200).json("seen")
     } catch (error) {
