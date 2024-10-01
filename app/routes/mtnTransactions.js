@@ -67,7 +67,7 @@ router.post("/donate", upload.none(), generateMTNAuthTk, async (req, res, next) 
                 externalId: savedTransaction._id, // can be orderId(payrequest Id) or transac-Id
                 payer: {
                     partyIdType: "MSISDN",
-                    partyId: req.body.phonenumber, //phonenumber
+                    partyId: "0787785114", //phonenumber
                 },
                 payerMessage: "Donation of amount / Monthly Subscription for Nyati", //Reason for Payment
                 payeeNote: ""
