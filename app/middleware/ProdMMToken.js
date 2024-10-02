@@ -9,7 +9,7 @@ dotenv.config();
 const generateUUID = (primary_key, secondary_key) => {
     const combinedKeys = `${primary_key}-${secondary_key}`;
 
-    console.log("combinedKeys", combinedKeys);
+   // console.log("combinedKeys", combinedKeys);
 
     const createdUUID = uuidv5(combinedKeys, uuidv5.URL);
 
