@@ -171,16 +171,17 @@ router.get("/transact_statuses/:id", generateMTNAuthTk,  async (req, res, next) 
             }
         }
         let transactStatus = selectMessage(submitStatusRequest.data.status.toLowerCase());
-       
+        console.log("transactStatus2", transactStatus);
         //check if transaction status same as the saved one in the db
 
         if (transactStatus !== getTransact.payment_status_description) {
+            console.log("In DB", transactStatus);
             getTransact.transactionId = submitStatusRequest.data.financialTransactionId;
             getTransact.payment_status_description = transactStatus;
             getTransact.status_reason = transactStatus;
 
             let savedStatus = getTransact.save();
-
+            console.log("Saved Status", savedStatus.payment_status_description);
             res.status(200).json({
                 transactionId: savedStatus.transactionId,
                 payStatus: savedStatus.payment_status_description,
