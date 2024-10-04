@@ -7,7 +7,7 @@ import { v5 as uuidv5 } from "uuid";
 dotenv.config();
 
 const generateUUID = (primary_key, secondary_key) => {
-    const combinedKeys = `${primary_key}-${secondary_key}`;
+    const combinedKeys = `${primary_key}-${secondary_key}213`;
 
    // console.log("combinedKeys", combinedKeys);
 

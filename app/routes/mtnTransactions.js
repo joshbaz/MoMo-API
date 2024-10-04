@@ -33,7 +33,7 @@ router.post("/donate", upload.none(), generateMTNAuthTk, async (req, res, next) 
             let MTNRequestLink = `${MTN_BaseUrl}/collection/v1_0/requesttopay`
 
             let currency = process.env.Production_State === "production" ? "UGX" : "EUR"
-
+console.log("currency", currency)
             const createTransaction = new transactModel({
                 _id: new mongoose.Types.ObjectId(),
                 transactionType: "donation",
@@ -50,7 +50,7 @@ router.post("/donate", upload.none(), generateMTNAuthTk, async (req, res, next) 
             });
 
             let savedTransaction = await createTransaction.save();
-
+            console.log("savedTransaction", savedTransaction)
             {/** declaration of the request and header parameters for axios request */ }
 
             {/**
@@ -82,9 +82,10 @@ router.post("/donate", upload.none(), generateMTNAuthTk, async (req, res, next) 
                 "X-Target-Environment": TargetEnv,
                 "Ocp-Apim-Subscription-Key": subscription_Key
             }
+            console.log("requestParameters", requestParameters)
 
             let submitOrderRequest = await axios.post(MTNRequestLink, requestParameters, { headers: headers });
-
+            console.log("submitOrderRequest", submitOrderRequest.data)
             res.status(200).json({
                 orderTrackingId: createdUUID
             })
@@ -96,6 +97,7 @@ router.post("/donate", upload.none(), generateMTNAuthTk, async (req, res, next) 
     } catch (error) {
         if (!error.statusCode) {
             error.statusCode = 500;
+            console.log("error", error)
         }
         next(error);
     }
