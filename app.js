@@ -20,7 +20,7 @@ app.use(cors({ origin: "*", credentials: false }));
 /**
  * Import @routes
  */
-import payRoutes from './app/routes/payment.js'
+
 import pesaRoutes from './app/routes/pesapalTransactions.js';
 import airtelRoutes from './app/routes/airtelTransactions.js'
 import mtnRoutes from './app/routes/mtnTransactions.js'
@@ -28,7 +28,7 @@ import mtnRoutes from './app/routes/mtnTransactions.js'
 /** 
  * implement routes
  */
-app.use('/payment', payRoutes)
+
 app.use('/nyatimtn', mtnRoutes)
 app.use('/nyatipay', pesaRoutes)
 app.use("/nyatiairtel", airtelRoutes)
