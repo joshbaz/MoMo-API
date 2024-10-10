@@ -111,6 +111,8 @@ export const generateMTNAuthTk = async (req, res, next) => {
 
 
         let TokenReqLink = `${MoMo_BaseURL}/collection/token/`
+        let targetEnvironment = process.env.Production_State === "production" ? process.env.TargetEnvProd : process.env.TargetEnvSandBox;
+
 
 
         let generatedTk = await axios.post(
@@ -118,6 +120,7 @@ export const generateMTNAuthTk = async (req, res, next) => {
             {
                 headers: {
                     Authorization: BasicAuth,
+                    "X-Target-Environment": targetEnvironment,
                     "Content-Type": "application/json",
                     "Ocp-Apim-Subscription-Key": subscription_Key,
                 }

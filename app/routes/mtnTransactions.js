@@ -233,8 +233,9 @@ router.get("/checkStatus", async (req, res, next) => {
         next(error)  
     }
 })
+
 //CallbackInstance of requesttoPay Payment
-router.put("/status/:orderId", async (req, res, next) => {
+router.put("/status", async (req, res, next) => {
     try {
 
         let orderId = req.params.orderId
