@@ -52,7 +52,7 @@ console.log("currency", currency)
             });
 
             let savedTransaction = await createTransaction.save();
-            console.log("savedTransaction", savedTransaction)
+           // console.log("savedTransaction", savedTransaction)
             {/** declaration of the request and header parameters for axios request */ }
 
             {/**
@@ -372,7 +372,7 @@ router.post("/app/purchase", upload.none(), generateMTNAuthTk, async (req, res, 
             let headers = {
                 "Content-Type": "application/json",
                 "Authorization": req.mtn_access_token,
-                "X-Callback-Url": `${process.env.MoMo_APP_Callback_BaseURL}/nyatimtn/status/${createdUUID}`,
+                "X-Callback-Url": `${process.env.MoMo_Callback_BaseURL}/nyatimtn/status/${createdUUID}`,
                 "X-Reference-Id": `${createdUUID}`,
                 "X-Target-Environment": TargetEnv,
                 "Ocp-Apim-Subscription-Key": subscription_Key
