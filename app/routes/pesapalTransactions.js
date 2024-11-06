@@ -364,7 +364,7 @@ router.post("/app/purchase", upload.none(), generatePesaAuthTk, generateIPN_ID, 
                 paym: "Visa",
                 currency: "UGX",
                 amount: req.body.amount,
-                description: `Donation- ${req.body.note}`,
+                description: `Purchase for - ${req.body.filmName}`,
                 callback_url: `${process.env.CLIENT_URL}/pay-response`,
                 cancellation_url: "", //optional
                 notification_id: req.ipn_id,
@@ -387,29 +387,12 @@ router.post("/app/purchase", upload.none(), generatePesaAuthTk, generateIPN_ID, 
             }
 
             let submitOrder = await axios.post(PesaRequestLink, requestParameters, { headers: headers });
-            console.log("submitOrder", submitOrder.data);
+            //console.log("submitOrder", submitOrder.data);
 
             if (submitOrder.data.error) {
                 next(submitOrder.data.error);
             } else {
-                console.log("uuid", createdUUID)
-
-                const createTransact = new transactModel({
-                    _id: new mongoose.Types.ObjectId(),
-                    transactionType: "donation",
-                    paymentType: "PesaPal -",
-
-                    amount: req.body.amount,
-                    purpose: req.body.note,
-                    currency: "",
-                    email: req.body.email,
-                    phonenumber: req.body.phonenumber,
-                    fistname: req.body.firstname,
-                    lastname: req.body.lastname,
-                    orderTrackingId: submitOrder.data.order_tracking_id
-                })
-
-                createTransact.save();
+                //console.log("uuid", createdUUID)
 
                 res.status(200).json({
                     // token: req.bearertk,
@@ -498,7 +481,8 @@ router.get("/app/tansact_statuses", generatePesaAuthTk, async (req, res, next) =
                     paymentType: `PesaPal-${payment_method}`,
                     merchant_reference: merchant_reference,
                     currency: currency,
-
+                    "orderNotificationType": "IPNCHANGE",
+                    "orderTrackingId": OrderTrackingId
                 });
            
 
