@@ -29,8 +29,8 @@ const transporter = nodemailer.createTransport({
         pass: process.env.gPass2
     }
 })
-
-//make donation.
+/** WEBSITE TRANSACTIONS */
+//make website donation.
 router.post("/donate", upload.none(), generatePesaAuthTk, generateIPN_ID, async (req, res, next) => {
     try {
 
@@ -126,6 +126,203 @@ router.post("/donate", upload.none(), generatePesaAuthTk, generateIPN_ID, async 
 
 
 })
+
+
+/** APP TRANSACTIONS */
+
+router.post("/app/donate", upload.none(), generatePesaAuthTk, generateIPN_ID, async (req, res, next) => {
+    try {
+
+        let { body } = req
+        //console.log("tokenRP", req.bearertk, req.ipn_id);
+        console.log(body, "Body", req.body);
+
+        const createdUUID = uuidv4();
+
+        if (req.body.paymentType === "Visa") {
+
+            let PESA_URL = process.env.Production_State === "production" ? process.env.PESA_LIVE_URL : process.env.PESA_Sandbox_URL
+            let PesaRequestLink = `${PESA_URL}/api/Transactions/SubmitOrderRequest`
+
+            let headers = {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "Authorization": req.bearertk
+            }
+
+            let requestParameters = {
+                id: createdUUID,
+                paym: "Visa",
+                currency: "UGX",
+                amount: req.body.amount,
+                description: `Donation- ${req.body.note}`,
+                callback_url: `${process.env.CLIENT_URL}/pay-response`,
+                cancellation_url: "", //optional
+                notification_id: req.ipn_id,
+                "branch": "",
+                billing_address: {
+                    phone_number: req.body.phonenumber,
+                    email_address: req.body.email,
+                    country_code: "", //optional
+                    first_name: req.body.firstname, //optional
+                    "middle_name": "",
+                    last_name: req.body.lastname,
+                    "line_1": "",
+                    "line_2": "",
+                    "city": "",
+                    "state": "",
+                    "postal_code": "",
+                    "zip_code": ""
+                },
+
+            }
+
+            let submitOrder = await axios.post(PesaRequestLink, requestParameters, { headers: headers });
+            console.log("submitOrder", submitOrder.data);
+
+            if (submitOrder.data.error) {
+                next(submitOrder.data.error);
+            } else {
+                console.log("uuid", createdUUID)
+
+                const createTransact = new transactModel({
+                    _id: new mongoose.Types.ObjectId(),
+                    transactionType: "donation",
+                    paymentType: "PesaPal -",
+
+                    amount: req.body.amount,
+                    purpose: req.body.note,
+                    currency: "",
+                    email: req.body.email,
+                    phonenumber: req.body.phonenumber,
+                    fistname: req.body.firstname,
+                    lastname: req.body.lastname,
+                    orderTrackingId: submitOrder.data.order_tracking_id
+                })
+
+                createTransact.save();
+
+                res.status(200).json({
+                    // token: req.bearertk,
+                    // ipn: req.ipn_id,
+                    // createdUUID: createdUUID
+                    ...submitOrder.data
+                })
+            }
+
+        } else if (req.body.paymentType === "Airtel") {
+            res.status(500).json("No Payment")
+        } else if (req.body.paymentType === "MTN") {
+            res.status(500).json("No Payment")
+        }
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+        next(error);
+    }
+
+
+})
+
+
+router.post("/app/purchase", upload.none(), generatePesaAuthTk, generateIPN_ID, async (req, res, next) => {
+    try {
+
+        let { body } = req
+        //console.log("tokenRP", req.bearertk, req.ipn_id);
+        console.log(body, "Body", req.body);
+
+        const createdUUID = uuidv4();
+
+        if (req.body.paymentType === "Visa") {
+
+            let PESA_URL = process.env.Production_State === "production" ? process.env.PESA_LIVE_URL : process.env.PESA_Sandbox_URL
+            let PesaRequestLink = `${PESA_URL}/api/Transactions/SubmitOrderRequest`
+
+            let headers = {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "Authorization": req.bearertk
+            }
+
+            let requestParameters = {
+                id: createdUUID,
+                paym: "Visa",
+                currency: "UGX",
+                amount: req.body.amount,
+                description: `Donation- ${req.body.note}`,
+                callback_url: `${process.env.CLIENT_URL}/pay-response`,
+                cancellation_url: "", //optional
+                notification_id: req.ipn_id,
+                "branch": "",
+                billing_address: {
+                    phone_number: req.body.phonenumber,
+                    email_address: req.body.email,
+                    country_code: "", //optional
+                    first_name: req.body.firstname, //optional
+                    "middle_name": "",
+                    last_name: req.body.lastname,
+                    "line_1": "",
+                    "line_2": "",
+                    "city": "",
+                    "state": "",
+                    "postal_code": "",
+                    "zip_code": ""
+                },
+
+            }
+
+            let submitOrder = await axios.post(PesaRequestLink, requestParameters, { headers: headers });
+            console.log("submitOrder", submitOrder.data);
+
+            if (submitOrder.data.error) {
+                next(submitOrder.data.error);
+            } else {
+                console.log("uuid", createdUUID)
+
+                const createTransact = new transactModel({
+                    _id: new mongoose.Types.ObjectId(),
+                    transactionType: "donation",
+                    paymentType: "PesaPal -",
+
+                    amount: req.body.amount,
+                    purpose: req.body.note,
+                    currency: "",
+                    email: req.body.email,
+                    phonenumber: req.body.phonenumber,
+                    fistname: req.body.firstname,
+                    lastname: req.body.lastname,
+                    orderTrackingId: submitOrder.data.order_tracking_id
+                })
+
+                createTransact.save();
+
+                res.status(200).json({
+                    // token: req.bearertk,
+                    // ipn: req.ipn_id,
+                    // createdUUID: createdUUID
+                    ...submitOrder.data
+                })
+            }
+
+        } else if (req.body.paymentType === "Airtel") {
+            res.status(500).json("No Payment")
+        } else if (req.body.paymentType === "MTN") {
+            res.status(500).json("No Payment")
+        }
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+        next(error);
+    }
+
+
+})
+
 
 /** route for pesapal-status-notification only */
 router.get("/tansact_statuses", generatePesaAuthTk, async (req, res, next) => {

@@ -14,7 +14,9 @@ const upload = multer({
     storage: multer.memoryStorage()
 })
 
-// request payments
+//Website Transactions
+
+// website donations request payments
 router.post("/donate", upload.none(), generateMTNAuthTk, async (req, res, next) => {
     try {
 
@@ -68,7 +70,7 @@ console.log("currency", currency)
                 externalId: savedTransaction._id, // can be orderId(payrequest Id) or transac-Id
                 payer: {
                     partyIdType: "MSISDN",
-                    partyId: req.body.phonenumber, //phonenumber
+                    partyId: req.body.phonenumber, //phonenumber must be 256
                 },
                 payerMessage: "Donation of amount / Monthly Subscription for Nyati", //Reason for Payment
                 payeeNote: ""
@@ -85,7 +87,7 @@ console.log("currency", currency)
             console.log("requestParameters", requestParameters)
 
             let submitOrderRequest = await axios.post(MTNRequestLink, requestParameters, { headers: headers });
-            console.log("submitOrderRequest", submitOrderRequest.data)
+            //console.log("submitOrderRequest", submitOrderRequest.data)
             res.status(200).json({
                 orderTrackingId: createdUUID
             })
@@ -104,16 +106,16 @@ console.log("currency", currency)
 });
 
 //check status of payment
-router.get("/transact_statuses/:id", generateMTNAuthTk,  async (req, res, next) => {
+router.get("/transact_statuses/:id", generateMTNAuthTk, async (req, res, next) => {
     try {
-       // console.log("mtn bearerTk", req.mtn_access_token);
-        const  OrderTrackingId  = req.params.id;
+        // console.log("mtn bearerTk", req.mtn_access_token);
+        const OrderTrackingId = req.params.id;
 
         console.log(" req.params.id", OrderTrackingId)
 
         let getTransact = await transactModel.findOne({ orderTrackingId: OrderTrackingId });
 
-       // console.log("getTransaction", getTransact)
+        // console.log("getTransaction", getTransact)
 
         if (!getTransact) {
             const error = new Error("Transaction not Found");
@@ -124,7 +126,7 @@ router.get("/transact_statuses/:id", generateMTNAuthTk,  async (req, res, next) 
         let TargetEnv = process.env.Production_State === "production" ? process.env.TargetEnvProd : process.env.TargetEnvSandBox;
 
         let subscription_Key = process.env.Production_State === "production" ? process.env.MoMo_Prod_Collect_Primary : process.env.MoMo_Collect_Primary;
-        
+
         let MTN_BaseUrl = process.env.Production_State === "production" ? process.env.MoMo_Prod_BASEURL : process.env.MoMo_SandboxURL;
 
         let MTNRequestLink = `${MTN_BaseUrl}/collection/v1_0/requesttopay/${OrderTrackingId}`;
@@ -134,7 +136,7 @@ router.get("/transact_statuses/:id", generateMTNAuthTk,  async (req, res, next) 
             "Authorization": req.mtn_access_token,
             "X-Target-Environment": TargetEnv,
             "Ocp-Apim-Subscription-Key": subscription_Key,
-           
+
         }
 
         let submitStatusRequest = await axios.get(MTNRequestLink, { headers: headers });
@@ -153,9 +155,9 @@ router.get("/transact_statuses/:id", generateMTNAuthTk,  async (req, res, next) 
         console.log("transactStatus", submitStatusRequest.data.status);
 
         const selectMessage = (shortMessage) => {
-         
+
             switch (shortMessage) {
-               
+
                 case "failed":
                     return "Transaction has Failed";
                 case "successful":
@@ -197,7 +199,7 @@ router.get("/transact_statuses/:id", generateMTNAuthTk,  async (req, res, next) 
     } catch (error) {
         if (!error.statusCode) {
             error.statusCode = 500
-           // console.log("error", error)
+            // console.log("error", error)
         }
         next(error)
     }
@@ -230,9 +232,247 @@ router.get("/checkStatus", async (req, res, next) => {
             error.statusCode = 500
             console.log("error", error)
         }
-        next(error)  
+        next(error)
     }
 })
+
+
+/** APP TRANSACTIONS **/
+
+// app donations
+/**
+ * Pass Request Needs:
+ *  amount
+ * phonenumber
+ * filmName
+ * 
+ */
+router.post("/app/donate", upload.none(), generateMTNAuthTk, async (req, res, next) => {
+    try {
+
+        console.log("mtn bearerTk", req.mtn_access_token);
+
+        const createdUUID = uuidv4();
+
+        //   console.log("createdUUIS", createdUUID)
+        if (req.body.paymentType === "MTN") {
+            let TargetEnv = process.env.Production_State === "production" ? process.env.TargetEnvProd : process.env.TargetEnvSandBox;
+
+            let subscription_Key = process.env.Production_State === "production" ? process.env.MoMo_Prod_Collect_Primary : process.env.MoMo_Collect_Primary;
+
+            let MTN_BaseUrl = process.env.Production_State === "production" ? process.env.MoMo_Prod_BASEURL : process.env.MoMo_SandboxURL;
+
+            let MTNRequestLink = `${MTN_BaseUrl}/collection/v1_0/requesttopay`
+
+            let currency = process.env.Production_State === "production" ? "UGX" : "EUR"
+            
+         
+            {/** declaration of the request and header parameters for axios request */ }
+
+            {/**
+            All Statuses Expected & testCases:
+            Failed - 46733123450
+            Rejected - 46733123451
+            Timeout - 46733123452
+            Success - 56733123453
+            Pending - 46733123454
+            
+            */}
+            let requestParameters = {
+                amount: req.body.amount,
+                "currency": currency,
+                externalId: createdUUID, // can be orderId(payrequest Id) or transac-Id
+                payer: {
+                    partyIdType: "MSISDN",
+                    partyId: req.body.phonenumber, //phonenumber must be 256
+                },
+                payerMessage: `Donation for film ${ req.body.filmName }`, //Reason for Payment
+                payeeNote: ""
+            };
+
+            let headers = {
+                "Content-Type": "application/json",
+                "Authorization": req.mtn_access_token,
+                "X-Callback-Url": `${process.env.MoMo_Callback_BaseURL}/nyatimtn/status/${createdUUID}`,
+                "X-Reference-Id": `${createdUUID}`,
+                "X-Target-Environment": TargetEnv,
+                "Ocp-Apim-Subscription-Key": subscription_Key
+            }
+           
+
+            let submitOrderRequest = await axios.post(MTNRequestLink, requestParameters, { headers: headers });
+            //console.log("submitOrderRequest", submitOrderRequest.data)
+            res.status(200).json({
+                orderTrackingId: createdUUID
+            })
+
+        } else {
+            res.status(500).json("Check Payment Selected")
+        }
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+            console.log("error", error)
+        }
+        next(error);
+    }
+});
+
+// movie app purchase
+/**
+ * Pass Request Needs:
+ *  amount
+ * phonenumber
+ * filmName
+ * 
+ */
+router.post("/app/purchase", upload.none(), generateMTNAuthTk, async (req, res, next) => {
+    try {
+
+        console.log("mtn bearerTk", req.mtn_access_token);
+
+        const createdUUID = uuidv4();
+
+        //   console.log("createdUUIS", createdUUID)
+        if (req.body.paymentType === "MTN") {
+            let TargetEnv = process.env.Production_State === "production" ? process.env.TargetEnvProd : process.env.TargetEnvSandBox;
+
+            let subscription_Key = process.env.Production_State === "production" ? process.env.MoMo_Prod_Collect_Primary : process.env.MoMo_Collect_Primary;
+
+            let MTN_BaseUrl = process.env.Production_State === "production" ? process.env.MoMo_Prod_BASEURL : process.env.MoMo_SandboxURL;
+
+            let MTNRequestLink = `${MTN_BaseUrl}/collection/v1_0/requesttopay`
+
+            let currency = process.env.Production_State === "production" ? "UGX" : "EUR"
+            
+            {/** declaration of the request and header parameters for axios request */ }
+
+            {/**
+            All Statuses Expected & testCases:
+            Failed - 46733123450
+            Rejected - 46733123451
+            Timeout - 46733123452
+            Success - 56733123453
+            Pending - 46733123454
+            
+            */}
+            let requestParameters = {
+                amount: req.body.amount,
+                "currency": currency,
+                externalId: createdUUID, // can be orderId(payrequest Id) or transac-Id
+                payer: {
+                    partyIdType: "MSISDN",
+                    partyId: req.body.phonenumber, //phonenumber must be 256
+                },
+                payerMessage: `Purchase for film ${req.body.filmName}`, //Reason for Payment
+                payeeNote: ""
+            };
+
+            let headers = {
+                "Content-Type": "application/json",
+                "Authorization": req.mtn_access_token,
+                "X-Callback-Url": `${process.env.MoMo_Callback_BaseURL}/nyatimtn/status/${createdUUID}`,
+                "X-Reference-Id": `${createdUUID}`,
+                "X-Target-Environment": TargetEnv,
+                "Ocp-Apim-Subscription-Key": subscription_Key
+            }
+            //console.log("requestParameters", requestParameters)
+
+            let submitOrderRequest = await axios.post(MTNRequestLink, requestParameters, { headers: headers });
+            //console.log("submitOrderRequest", submitOrderRequest.data)
+            res.status(200).json({
+                orderTrackingId: createdUUID
+            })
+
+        } else {
+            res.status(500).json("Check Payment Selected")
+        }
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+            console.log("error", error)
+        }
+        next(error);
+    }
+});
+
+// purchase or Donation transaction status
+router.get("/app/transact_statuses/:id", generateMTNAuthTk, async (req, res, next) => {
+    try {
+        // console.log("mtn bearerTk", req.mtn_access_token);
+        const OrderTrackingId = req.params.id;
+
+
+        let TargetEnv = process.env.Production_State === "production" ? process.env.TargetEnvProd : process.env.TargetEnvSandBox;
+
+        let subscription_Key = process.env.Production_State === "production" ? process.env.MoMo_Prod_Collect_Primary : process.env.MoMo_Collect_Primary;
+
+        let MTN_BaseUrl = process.env.Production_State === "production" ? process.env.MoMo_Prod_BASEURL : process.env.MoMo_SandboxURL;
+
+        let MTNRequestLink = `${MTN_BaseUrl}/collection/v1_0/requesttopay/${OrderTrackingId}`;
+
+        let headers = {
+            //  "Content-Type": "application/json",
+            "Authorization": req.mtn_access_token,
+            "X-Target-Environment": TargetEnv,
+            "Ocp-Apim-Subscription-Key": subscription_Key,
+
+        }
+
+        let submitStatusRequest = await axios.get(MTNRequestLink, { headers: headers });
+
+        //console.log("getTransaction", getTransact)
+        {/**
+            All Statuses Expected & testCases:
+            Failed 
+            Rejected
+            Timeout
+            Success
+            Pending
+            
+            */}
+       // console.log("response from MTN", submitStatusRequest.data);
+        // console.log("transactStatus", submitStatusRequest.data.status);
+
+        const selectMessage = (shortMessage) => {
+
+            switch (shortMessage) {
+
+                case "failed":
+                    return "Transaction has Failed";
+                case "successful":
+                    return "Transaction Successful";
+                case "pending":
+                    return "Transaction Pending";
+                case "rejected":
+                    return "Transaction Rejected";
+                case "timeout":
+                    return "Transaction Timedout"
+                default:
+                    return null;
+            }
+        }
+        let transactStatus = selectMessage(submitStatusRequest.data.status.toLowerCase());
+       
+        //check if transaction status same as the saved one in the db
+
+        res.status(200).json({
+            transactionId: submitStatusRequest.data.financialTransactionId,
+            payStatus: transactStatus,
+           
+        })
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500
+            // console.log("error", error)
+        }
+        next(error)
+    }
+})
+
+
 
 //CallbackInstance of requesttoPay Payment
 router.put("/status", async (req, res, next) => {
