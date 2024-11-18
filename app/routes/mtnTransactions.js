@@ -466,6 +466,7 @@ router.get("/app/transact_statuses/:id", generateMTNAuthTk, async (req, res, nex
         res.status(200).json({
             transactionId: submitStatusRequest.data.financialTransactionId,
             payStatus: transactStatus,
+            reason: submitStatusRequest.data?.reason
            
         })
     } catch (error) {
