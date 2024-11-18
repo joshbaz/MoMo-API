@@ -472,7 +472,7 @@ router.get("/app/transact_statuses/:id", generateMTNAuthTk, async (req, res, nex
     } catch (error) {
         if (!error.statusCode) {
             error.statusCode = 500
-            // console.log("error", error)
+            console.log("error", error)
         }
         next(error)
     }
