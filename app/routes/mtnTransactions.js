@@ -419,7 +419,7 @@ router.get("/app/transact_statuses/:id", generateMTNAuthTk, async (req, res, nex
         let MTNRequestLink = `${MTN_BaseUrl}/collection/v1_0/requesttopay/${OrderTrackingId}`;
 
         let headers = {
-            //  "Content-Type": "application/json",
+             "Content-Type": "application/json",
             "Authorization": req.mtn_access_token,
             "X-Target-Environment": TargetEnv,
             "Ocp-Apim-Subscription-Key": subscription_Key,
@@ -466,7 +466,7 @@ router.get("/app/transact_statuses/:id", generateMTNAuthTk, async (req, res, nex
         res.status(200).json({
             transactionId: submitStatusRequest.data.financialTransactionId,
             payStatus: transactStatus,
-            reason: submitStatusRequest.data?.reason
+          
            
         })
     } catch (error) {
