@@ -374,6 +374,8 @@ router.post("/app/purchase",upload.none(),  generateMTNAuthTk, async (req, res, 
                 payeeNote: ""
             };
 
+            console.log("request parameters", requestParameters)
+
             let headers = {
                 "Content-Type": "application/json",
                 "Authorization": req.mtn_access_token,
