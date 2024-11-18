@@ -467,9 +467,9 @@ router.get("/app/transact_statuses/:id", generateMTNAuthTk, async (req, res, nex
         //check if transaction status same as the saved one in the db
 
         res.status(200).json({
-            transactionId: submitStatusRequest.data.financialTransactionId,
+            //transactionId: submitStatusRequest.data.financialTransactionId,
             payStatus: transactStatus,
-          
+            transactionId: "id",
            
         })
     } catch (error) {
