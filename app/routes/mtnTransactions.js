@@ -336,6 +336,7 @@ router.post("/app/purchase", generateMTNAuthTk, async (req, res, next) => {
 
         console.log("mtn bearerTk", req.mtn_access_token);
 
+        console.log("Body", req.body)
         const createdUUID = uuidv4();
 
         //   console.log("createdUUIS", createdUUID)
