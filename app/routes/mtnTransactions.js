@@ -39,6 +39,7 @@ router.post("/donate", upload.none(), generateMTNAuthTk, async (req, res, next) 
 
             let currency = process.env.Production_State === "production" ? "UGX" : "EUR"
 console.log("currency", currency)
+
             const createTransaction = new transactModel({
                 _id: new mongoose.Types.ObjectId(),
                 transactionType: "donation",
@@ -375,7 +376,7 @@ router.post("/app/purchase", upload.none(), generateMTNAuthTk, async (req, res, 
             let headers = {
                 "Content-Type": "application/json",
                 "Authorization": req.mtn_access_token,
-                "X-Callback-Url": `${process.env.MoMo_Callback_BaseURL}/nyatimtn/status/${createdUUID}`,
+                "X-Callback-Url": `${process.env.MoMo_APP_Callback_BaseURL}/api/v1/film/payments/mtn/${createdUUID}`,
                 "X-Reference-Id": `${createdUUID}`,
                 "X-Target-Environment": TargetEnv,
                 "Ocp-Apim-Subscription-Key": subscription_Key
@@ -518,12 +519,12 @@ router.post("/sendmail", (req, res, next) => {
 
 
 //CallbackInstance of requesttoPay Payment
-router.put("/status", async (req, res, next) => {
+router.put("/status/:orderTrackingId", async (req, res, next) => {
     try {
 
-        let orderId = req.params.orderId
+        let orderId = req.params.orderTrackingId
         console.log("orderId from CallBack", orderId);
-        console.log("requestBody", req.body);
+        console.log("requestBody from MTN", req.body);
         //console.log("request", req);
 
         res.status(200).json("seen")

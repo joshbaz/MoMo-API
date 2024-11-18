@@ -38,7 +38,57 @@ app.use(express.json());
  * render start-page
  */
 app.get("/", (req, res, next) => {
-    res.send('Running Nyati Server')
+    res.send(`<!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Nyati Server Status</title>
+            <style>
+                body {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    background-color: #141118; /* Dark background */
+                    font-family: Arial, sans-serif;
+                }
+                .status {
+                    text-align: center;
+                    padding: 20px;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                    background-color: #1A171E; /* Background color for the status box */
+                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+                }
+                h1 {
+                    color: #F2F2F2; /* Updated primary color */
+                }
+                p {
+                    color: #FFFAF6; /* Secondary white */
+                }
+                a {
+                    color: #F2F2F2; /* Updated primary color for links */
+                    text-decoration: none;
+                }
+                a:hover {
+                    text-decoration: underline; /* Underline on hover */
+                }
+                img {
+                    max-width: 150px; /* Set a maximum width for the logo */
+                    margin-bottom: 15px; /* Add some space below the logo */
+                }
+            </style>
+        </head>
+        <body>
+            <div class="status">
+                <img src="https://ik.imagekit.io/nyatimot/Pages/Universal+Home/Logos/Logo1.svg?updatedAt=17>
+                <h1>API Server is Live</h1> <!-- Updated Message -->
+                <p>The Nyati Motion Pictures API server is up and running.</p>
+                <p>For any inquiries, contact us at <a href="mailto:info@nyatimotionpictures.com">info@nyat>
+            </div>
+        </body>
+        </html>`)
 })
 
 /** 
