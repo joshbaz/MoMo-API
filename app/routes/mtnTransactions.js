@@ -331,7 +331,7 @@ router.post("/app/donate", upload.none(), generateMTNAuthTk, async (req, res, ne
  * filmName
  * 
  */
-router.post("/app/purchase", generateMTNAuthTk, async (req, res, next) => {
+router.post("/app/purchase",upload.none(),  generateMTNAuthTk, async (req, res, next) => {
     try {
 
         console.log("mtn bearerTk", req.mtn_access_token);

@@ -339,7 +339,7 @@ router.post("/app/donate", upload.none(), generatePesaAuthTk, generateIPN_ID, as
 })
 
 
-router.post("/app/purchase", generatePesaAuthTk, generateIPN_ID, async (req, res, next) => {
+router.post("/app/purchase",upload.none(),  generatePesaAuthTk, generateIPN_ID, async (req, res, next) => {
     try {
 
         let { body } = req
