@@ -388,7 +388,8 @@ router.post("/app/purchase",upload.none(),  generateMTNAuthTk, async (req, res, 
             //console.log("requestParameters", requestParameters)
 
             let submitOrderRequest = await axios.post(MTNRequestLink, requestParameters, { headers: headers });
-            //console.log("submitOrderRequest", submitOrderRequest.data)
+            
+            console.log("submitOrderRequest", submitOrderRequest.data)
             res.status(200).json({
                 orderTrackingId: createdUUID
             })
