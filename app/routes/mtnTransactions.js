@@ -297,7 +297,7 @@ router.post("/app/donate", upload.none(), generateMTNAuthTk, async (req, res, ne
             let headers = {
                 "Content-Type": "application/json",
                 "Authorization": req.mtn_access_token,
-                "X-Callback-Url": `${process.env.MoMo_Callback_BaseURL}/nyatimtn/status/${createdUUID}`,
+                "X-Callback-Url": `${process.env.MoMo_APP_Callback_BaseURL}/api/v1/payment/mtncallback/${createdUUID}`,
                 "X-Reference-Id": `${createdUUID}`,
                 "X-Target-Environment": TargetEnv,
                 "Ocp-Apim-Subscription-Key": subscription_Key
@@ -376,7 +376,7 @@ router.post("/app/purchase", upload.none(), generateMTNAuthTk, async (req, res, 
             let headers = {
                 "Content-Type": "application/json",
                 "Authorization": req.mtn_access_token,
-                "X-Callback-Url": `${process.env.MoMo_APP_Callback_BaseURL}/api/v1/film/payments/mtn/${createdUUID}`,
+                "X-Callback-Url": `${process.env.MoMo_APP_Callback_BaseURL}/api/v1/payment/mtncallback/${createdUUID}`,
                 "X-Reference-Id": `${createdUUID}`,
                 "X-Target-Environment": TargetEnv,
                 "Ocp-Apim-Subscription-Key": subscription_Key
