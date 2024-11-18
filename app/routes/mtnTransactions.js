@@ -406,7 +406,7 @@ router.post("/app/purchase",upload.none(),  generateMTNAuthTk, async (req, res, 
 // purchase or Donation transaction status
 router.get("/app/transact_statuses/:id", generateMTNAuthTk, async (req, res, next) => {
     try {
-        // console.log("mtn bearerTk", req.mtn_access_token);
+         console.log("mtn bearerTk", "App Transactions");
         const OrderTrackingId = req.params.id;
 
 
