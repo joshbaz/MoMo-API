@@ -112,7 +112,7 @@ console.log("currency", currency)
 //check status of payment
 router.get("/transact_statuses/:id", generateMTNAuthTk, async (req, res, next) => {
     try {
-        // console.log("mtn bearerTk", req.mtn_access_token);
+        console.log("mtn bearerTkrunnimg from website");
         const OrderTrackingId = req.params.id;
 
         console.log(" req.params.id", OrderTrackingId)
