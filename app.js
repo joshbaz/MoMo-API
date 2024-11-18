@@ -82,10 +82,10 @@ app.get("/", (req, res, next) => {
         </head>
         <body>
             <div class="status">
-                <img src="https://ik.imagekit.io/nyatimot/Pages/Universal+Home/Logos/Logo1.svg?updatedAt=17>
+                <img src="https://ik.imagekit.io/nyatimot/Pages/Universal+Home/Logos/Logo1.svg?updatedAt=1724072184503" alt="Nyati Motion Pictures Logo">
                 <h1>API Server is Live</h1> <!-- Updated Message -->
                 <p>The Nyati Motion Pictures API server is up and running.</p>
-                <p>For any inquiries, contact us at <a href="mailto:info@nyatimotionpictures.com">info@nyat>
+                <p>For any inquiries, contact us at <a href="mailto:info@nyatimotionpictures.com">info@nyatimotionpictures.com</a></p>
             </div>
         </body>
         </html>`)
