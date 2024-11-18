@@ -6,6 +6,7 @@ import { generateMTNAuthTk } from "../middleware/ProdMMToken.js";
 import { v4 as uuidv4 } from "uuid";
 import axios from 'axios';
 import multer from "multer";
+import nodemailer from 'nodemailer';
 const router = express.Router();
 
 dotenv.config();
@@ -13,6 +14,8 @@ dotenv.config();
 const upload = multer({
     storage: multer.memoryStorage()
 })
+
+
 
 //Website Transactions
 
@@ -463,6 +466,46 @@ router.get("/app/transact_statuses/:id", generateMTNAuthTk, async (req, res, nex
             payStatus: transactStatus,
            
         })
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500
+            // console.log("error", error)
+        }
+        next(error)
+    }
+})
+
+router.post("/sendmail", (req, res, next) => {
+    try {
+
+        const transporter = nodemailer.createTransport({
+            host: "smtp.zoho.com",
+            port: 465,
+            secure: true,
+            auth: {
+                user: process.env.gUser1,
+                pass: process.env.gPass1
+            }
+        })
+
+        let mailOptions = {
+            from: "no-reply@nyatimotionpictures.com",
+            to: "stephaniekirathe@gmail.com",
+            cc: " mymbugua@gmail.com",
+            subject: "TEST Alert - Payment Received",
+            html: `Hello World`
+        }
+
+        transporter.sendMail(mailOptions, async (error, info) => {
+            if (error) {
+                console.log(error)
+            } else {
+                console.log('email sent: ')
+
+                res.status(200).json("Emial sent")
+            }
+        })
+        
     } catch (error) {
         if (!error.statusCode) {
             error.statusCode = 500
